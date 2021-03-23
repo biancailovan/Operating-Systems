@@ -9,12 +9,11 @@
 
 /*TEMA 2: Procese si Thread-uri*/
 
-/*variabile globale*/
+
 int nrThreads=0;
 int myThreads=0;
 int haveFound=0;
 int turn=0;
-/**/
 
 pthread_mutex_t mutexONE, mutexTWO, mutexTHREE, mutexFOUR, lock;
 pthread_cond_t cond;
@@ -53,9 +52,6 @@ void funcINIT(STRUCT *thinfo)
 void functionP3(STRUCT *thinfo)
 {
 
-	/*if (thinfo->process == 3 && thinfo->thread == 4)
-		pthread_mutex_lock(&mutexONE);*/
-
 	//5.1 porneste dupa ce se termina 3.3
 	if (thinfo->process == 3 && thinfo->thread == 3)
 		pthread_mutex_lock(&mutexTHREE);
@@ -90,11 +86,9 @@ void functionP3(STRUCT *thinfo)
 //3.5 se incheie dupa 3.4
 
 void *th_function(void *arg){
-	//int idTh=*(int*)arg;
 	pthread_mutex_lock(&lock);
 	if(turn){
 		while(turn){
-			//pthread_cond_wait(&lock, &cond);
 			sem_wait(&sema);
 		}
 	}
@@ -220,11 +214,7 @@ int create_process(int id){
 			pthread_mutex_lock(&mutexTHREE);
 			pthread_mutex_lock(&mutexTWO);
 			pthread_mutex_lock(&mutexFOUR);
-			//pthread_mutex_lock(&mutexTWO);
-			//STRUCT args[5] = {{3,1},{3,2},{3,3},{3,4}, {3, 5}};
 			STRUCT args[11] = {{3,1},{3,2},{3,3},{3,4}, {3, 5},{5,1},{5,2},{5,3},{5,4},{5, 5},{5,6}};
-			//pthread_mutex_lock(&mutexONE);
-            //pthread_mutex_lock(&mutexTWO);
 			create_threads(threads, args, 11);
 		
 			waitpid(pid8, 0, 0);
@@ -239,17 +229,8 @@ int create_process(int id){
 							{4,21},{4,22},{4,23},{4,24},{4,25},{4,26},{4,27},{4,28},{4,29},{4,30},
 							{4,31},{4,32},{4,33},{4,34},{4,35},{4,36},{4,37}, {4,38},{4,39},{4,40},{4,41},{4,42},{4,43},{4,44},
                             {4,45},{4,46},{4,47},{4,48},{4,49}};
-			//create_threads(threads, args, 49);
 			create_threads4(threads, args, 49);
-			//pid4 = create_process(4);
-			pid5 = create_process(5);
-           	//pthread_t threads2[6];
-			//pthread_mutex_lock(&mutexTHREE);
-			//STRUCT args2[6] = {{5,1},{5,2},{5,3},{5,4}, {5, 5},{5, 6}};
-			//STRUCT args2[11] = {{3,1},{3,2},{5,1},{3,3},{5,2},{5,3},{5,4}, {5, 5},{3,4},{3,5},{5, 6}};
-			//pthread_mutex_lock(&mutexFOUR);
-			//create_threads(threads2, args2, 6);
-			
+			pid5 = create_process(5);			
 			waitpid(pid5, 0, 0);
 		}
 
@@ -266,14 +247,14 @@ int main()
 {
     init();
 
-	/*procesul parinte*/
+    /*procesul parinte*/
     info(BEGIN, 1, 0);
 
     pid2 = create_process(2);
     pid3 = create_process(3);
     pid4 = create_process(4);
 
-	/*copii sai*/
+    /*copii sai*/
     waitpid(pid2, 0, 0);
     waitpid(pid3, 0, 0);
     waitpid(pid4, 0, 0);
