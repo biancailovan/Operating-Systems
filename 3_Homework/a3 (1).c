@@ -105,7 +105,6 @@ int main()
     void* ptr;
     char *shDATA = NULL;
     unsigned int offset = 0;
-    //unsigned int copy_offset = 0;
     unsigned int value = 0;/*valoarea care trebuie scrisa in reg de memorie partajata*/
     unsigned int file_size1 = 0;
     unsigned int file_size2 = 0;
@@ -146,9 +145,6 @@ int main()
 
     /*Daca toti pasii s-au executat cu succes, programul afiseaza: */
     printf("SUCCESS\n");
-    //valid_SF(fd2);
-    //printf("something\n");
-    //printf("%d\n", value);
 
     for (;;)
     {
@@ -255,65 +251,38 @@ int main()
             printf("%d\n", file_size2);
             printf("DISPERRR\n");
 
-            fd3_MAP = open(file_name, O_RDONLY); /*deschid doar in citire!!*/
-            /*if (fd3 == -1){
-                perror("ERROR\n");
-                return 4;
-            }*/
-            //ptr = mmap(0, file_size1, PROT_READ, MAP_SHARED, fd3_MAP, 0);
+            fd3_MAP = open(file_name, O_RDONLY); 
+		
             if (fd3_MAP < 0){
                 size = 8;
                 write(fd2, &size, 1);
                 write(fd2, &request_message, size); //map
-                //ptr += strlen(request_message);
                
                 size = 5;
                 write(fd2, &size, 1);
                 write(fd2, &error, size); //error
-                //ptr += strlen(error);
                 perror("Could not map file\n");
                 continue;
-                //return 0;
             }
 
-            //else{
-            //ftruncate(fd3, 4700637);
-            /*vreau sa aflu dimensiunea*/
             file_size2 = lseek(fd3_MAP, 0, SEEK_END);
-            //printf("%d\n", offset);
             lseek(fd3_MAP, 0, SEEK_SET);
             printf("\n%d\n", file_size2);
             printf("%d\n", file_size1);
             myDATA = (char *)mmap(NULL, file_size2, PROT_READ, MAP_SHARED, fd3_MAP, 0);
             printf("%s\n", myDATA);
-            //ftruncate(fd3, file_size2);
-            //ptr = mmap(0, file_size2, PROT_READ, MAP_SHARED, fd3, 0); 
             if (myDATA == (void *)-1){
                 size = 8;
                 write(fd2, &size, 1);
                 write(fd2, &request_message, size); //map
-                //data += strlen(request_message);
 
                 size = 5;
                 write(fd2, &size, 1);
                 write(fd2, &error, size); //error
-                //data += strlen(error);
                 close(fd3_MAP);
                 perror("Could not map\n");
-                //return 0;
-                //break;
                 continue;
             }
-            /*else{
-                size = 8;
-                write(fd2, &size, 1);
-                write(fd2, &request_message, size);
-
-                size = 7;
-                write(fd2, &size, 1);
-                write(fd2, &success, size);
-            }*/
-            //}
 
             printf("%d\n", file_size2);
             size = 8;
@@ -323,14 +292,10 @@ int main()
             size = 7;
             write(fd2, &size, 1);
             write(fd2, &success, size); //success
-            //return 0;
-            //}
         }
 
         /*2.7 Request pentru citirea de la un offset din fisier*/
         if (strncmp("READ_FROM_FILE_OFFSET", request_message, 21) == 0) {
-            //read(fd2, &offset, sizeof(unsigned int));
-            //printf("something\n");
             read(fd1, &no_of_bytes, sizeof(unsigned int));
             read(fd1, &offset, no_of_bytes);
             printf("%d\n", no_of_bytes);
@@ -351,7 +316,6 @@ int main()
             size = 7;
             write(fd2, &size, 1);
             write(fd2, &success, size);
-            //return 0;
         }
 
 
@@ -374,7 +338,6 @@ int main()
 
         /*2.9 Request pentru citirea de la un offest din spatiul de memorie logic*/
         if (strncmp("READ_FROM_LOGICAL_SPACE_OFFSET", request_message, 30) == 0){
-            //if(valid_SF(fd1)){
             if (fd_READ == -1){
                 perror("ERROR\n");
                 return 5;
@@ -383,8 +346,7 @@ int main()
             size = 30;
             write(fd2, &size, 1);
             write(fd2, &request_message, size);
-            //valid_SF(fd2);
-
+		
             size = 5;
             write(fd2, &size, 1);
             write(fd2, &error, size);
@@ -394,7 +356,6 @@ int main()
             size = 7;
             write(fd1, &size, 1);
             write(fd1, &success, size);
-            //}
         }
 
         /*2.10 Request exit*/
@@ -405,7 +366,6 @@ int main()
 
     close(fd1);
     close(fd2);
-    //munmap(name, 4700637);
     munmap(myDATA, file_size2);
     shmdt(shDATA);
     shDATA = NULL;
